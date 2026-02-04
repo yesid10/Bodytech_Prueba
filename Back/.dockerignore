@@ -1,0 +1,11 @@
+/.gitignore
+.env
+.env.backup
+.phpunit.cache
+.phpunit.result.cache
+docker-compose.override.yml
+Dockerfile
+docker-compose.yml
+nginx.conf
+.env.example
+README.md
