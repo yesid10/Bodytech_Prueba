@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../hooks/useAuth';
+import { useAppDispatch } from '../hooks/useRedux';
+import { login } from '../store/slices/authSlice';
 import api from '../services/api';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -17,7 +18,7 @@ interface RegisterFormInputs {
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
-    const { login } = useAuth();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const {
         register,
@@ -35,7 +36,7 @@ const Register = () => {
         try {
             const response = await api.post('/register', formData);
             const { token, user } = response.data;
-            login(token, user);
+            dispatch(login({ token, user }));
             toast.success('Account created successfully!');
             navigate('/');
         } catch (error) {

@@ -15,7 +15,6 @@ import {
   CheckSquare,
   AlertCircle,
 } from "lucide-react";
-import { useAuth } from "../hooks/useAuth";
 
 interface CreateTaskFormInputs {
   title: string;
@@ -32,7 +31,6 @@ const Dashboard = () => {
     "all" | "pending" | "in_progress" | "done"
   >("all");
   const [editTitle, setEditTitle] = useState("");
-  useAuth();
 
   const {
     register,

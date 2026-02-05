@@ -1,13 +1,15 @@
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
+import { logout } from '../store/slices/authSlice';
 import { LogOut, CheckSquare } from 'lucide-react';
 
 const Layout = () => {
-    const { logout, user } = useAuth();
+    const dispatch = useAppDispatch();
+    const { user } = useAppSelector(state => state.auth);
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        logout();
+        dispatch(logout());
         navigate('/login');
     };
 
@@ -17,7 +19,7 @@ const Layout = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
-                            <Link to="/" className="flex-shrink-0 flex items-center gap-2 text-indigo-600 font-bold text-xl hover:text-indigo-500 transition-colors">
+                            <Link to="/" className="shrink-0 flex items-center gap-2 text-indigo-600 font-bold text-xl hover:text-indigo-500 transition-colors">
                                 <CheckSquare className="w-6 h-6" />
                                 <span>TaskManager</span>
                             </Link>

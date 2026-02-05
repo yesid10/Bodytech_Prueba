@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../hooks/useAuth';
+import { useAppDispatch } from '../hooks/useRedux';
+import { login } from '../store/slices/authSlice';
 import api from '../services/api';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -14,7 +15,7 @@ interface LoginFormInputs {
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const { login } = useAuth();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const {
         register,
@@ -33,7 +34,7 @@ const Login = () => {
             const userResponse = await getCurrentUser(response.data.access_token);
 
             const userData = userResponse.user || userResponse;
-            login(response.data.access_token, userData);
+            dispatch(login({ token: response.data.access_token, user: userData }));
             toast.success('Successfully logged in!');
             navigate('/');
         } catch (error) {

@@ -1,14 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from '../components/AuthProvider';
-import { useAuth } from '../hooks/useAuth';
+import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
+import { loadUserAsync } from '../store/slices/authSlice';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import Layout from '../components/Layout';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading } = useAppSelector(state => state.auth);
 
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -22,7 +23,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-    const { isAuthenticated, loading } = useAuth();
+    const { isAuthenticated, loading } = useAppSelector(state => state.auth);
     
     if (loading) {
        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -36,37 +37,40 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppRouter = () => {
-    return (
-        <AuthProvider>
-            <BrowserRouter>
-                <div className="min-h-screen bg-gray-100">
-                    <Toaster position="top-right" />
-                    <Routes>
-                        <Route path="/login" element={
-                            <PublicRoute>
-                                <Login />
-                            </PublicRoute>
-                        } />
-                        <Route path="/register" element={
-                            <PublicRoute>
-                                <Register />
-                            </PublicRoute>
-                        } />
-                        
-                        <Route path="/" element={
-                            <ProtectedRoute>
-                                <Layout />
-                            </ProtectedRoute>
-                        }>
-                            <Route index element={<Dashboard />} />
-                        </Route>
+    const dispatch = useAppDispatch();
 
-                        {/* Catch all route - redirect to home or 404 */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                    </Routes>
-                </div>
-            </BrowserRouter>
-        </AuthProvider>
+    useEffect(() => {
+        dispatch(loadUserAsync());
+    }, [dispatch]);
+    return (
+        <BrowserRouter>
+            <div className="min-h-screen bg-gray-100">
+                <Toaster position="top-right" />
+                <Routes>
+                    <Route path="/login" element={
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
+                    } />
+                    <Route path="/register" element={
+                        <PublicRoute>
+                            <Register />
+                        </PublicRoute>
+                    } />
+                    
+                    <Route path="/" element={
+                        <ProtectedRoute>
+                            <Layout />
+                        </ProtectedRoute>
+                    }>
+                        <Route index element={<Dashboard />} />
+                    </Route>
+
+                    {/* Catch all route - redirect to home or 404 */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </div>
+        </BrowserRouter>
     );
 };
 
