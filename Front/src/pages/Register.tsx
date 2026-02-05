@@ -87,7 +87,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8" style={{ backgroundColor: '#0f1419' }}>
       <AuthHeader
         title="Crea tu cuenta"
         subtitle="O inicia sesión en tu cuenta existente"
@@ -96,7 +96,10 @@ const Register = () => {
       />
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10" style={{
+          backgroundColor: '#1a1f2a',
+          borderColor: '#5a7a9a'
+        }}>
           <form
             className="space-y-6"
             onSubmit={handleSubmit(onSubmit)}
@@ -107,7 +110,7 @@ const Register = () => {
               label="Nombre completo"
               placeholder="Juan Pérez"
               type="text"
-              icon={<User className="h-5 w-5 text-gray-400" />}
+              icon={<User className="h-5 w-5" style={{ color: '#b0b2b8' }} />}
               error={errors.name}
               disabled={isSubmitting}
               registration={register("name", {
@@ -134,7 +137,7 @@ const Register = () => {
               label="Correo electrónico"
               placeholder="correo@ejemplo.com"
               type="email"
-              icon={<Mail className="h-5 w-5 text-gray-400" />}
+              icon={<Mail className="h-5 w-5" style={{ color: '#b0b2b8' }} />}
               error={errors.email}
               disabled={isSubmitting}
               registration={register("email", {
@@ -152,7 +155,7 @@ const Register = () => {
               label="Contraseña"
               placeholder="••••••"
               type={showPassword ? "text" : "password"}
-              icon={<Lock className="h-5 w-5 text-gray-400" />}
+              icon={<Lock className="h-5 w-5" style={{ color: '#b0b2b8' }} />}
               error={errors.password}
               disabled={isSubmitting}
               registration={register("password", {
@@ -177,7 +180,10 @@ const Register = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="transition-colors"
+                style={{ color: '#b0b2b8' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#e5e7eb'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#b0b2b8'}
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -192,7 +198,7 @@ const Register = () => {
               label="Confirmar contraseña"
               placeholder="••••••"
               type={showPasswordConfirmation ? "text" : "password"}
-              icon={<Lock className="h-5 w-5 text-gray-400" />}
+              icon={<Lock className="h-5 w-5" style={{ color: '#b0b2b8' }} />}
               error={errors.password_confirmation}
               disabled={isSubmitting}
               registration={register("password_confirmation", {
@@ -209,7 +215,10 @@ const Register = () => {
                 onClick={() =>
                   setShowPasswordConfirmation(!showPasswordConfirmation)
                 }
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="transition-colors"
+                style={{ color: '#b0b2b8' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#e5e7eb'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#b0b2b8'}
               >
                 {showPasswordConfirmation ? (
                   <EyeOff className="w-5 h-5" />

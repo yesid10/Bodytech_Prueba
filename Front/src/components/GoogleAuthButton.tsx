@@ -20,7 +20,20 @@ const GoogleAuthButton = ({
       type="button"
       onClick={onClick}
       disabled={disabled || loading}
-      className="w-full flex justify-center items-center gap-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      className="w-full flex justify-center items-center gap-1 py-2 px-4 border rounded-md shadow-sm text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      style={{
+        backgroundColor: '#252b38',
+        borderColor: '#5a7a9a',
+        color: '#b0b2b8'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#1a1f2a';
+        e.currentTarget.style.borderColor = '#6b9ac3';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = '#252b38';
+        e.currentTarget.style.borderColor = '#5a7a9a';
+      }}
     >
       {loading ? (
         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

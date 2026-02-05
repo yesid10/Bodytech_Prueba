@@ -84,7 +84,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8" style={{ backgroundColor: '#0f1419' }}>
       <AuthHeader
         title="Inicia sesión en tu cuenta"
         subtitle="O crea una nueva cuenta"
@@ -93,7 +93,10 @@ const Login = () => {
       />
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10" style={{
+          backgroundColor: '#1a1f2a',
+          borderColor: '#5a7a9a'
+        }}>
           <form
             className="space-y-6"
             onSubmit={handleSubmit(onSubmit)}
@@ -103,7 +106,8 @@ const Login = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium"
+                style={{ color: '#b0b2b8' }}
               >
                 Correo electrónico
               </label>
@@ -114,11 +118,12 @@ const Login = () => {
                   autoComplete="email"
                   placeholder="usuario@ejemplo.com"
                   disabled={isSubmitting}
-                  className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
-                    errors.email
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
+                  className="appearance-none block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{
+                    borderColor: errors.email ? '#a17171' : '#5a7a9a',
+                    backgroundColor: '#252b38',
+                    color: '#e5e7eb'
+                  }}
                   {...register("email", {
                     required: "El correo es requerido",
                     pattern: {
@@ -135,7 +140,8 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium"
+                style={{ color: '#b0b2b8' }}
               >
                 Contraseña
               </label>
@@ -146,11 +152,12 @@ const Login = () => {
                   autoComplete="current-password"
                   placeholder="••••••"
                   disabled={isSubmitting}
-                  className={`appearance-none block w-full px-3 py-2 pr-10 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
-                    errors.password
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
+                  className="appearance-none block w-full px-3 py-2 pr-10 border rounded-md shadow-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{
+                    borderColor: errors.password ? '#a17171' : '#5a7a9a',
+                    backgroundColor: '#252b38',
+                    color: '#e5e7eb'
+                  }}
                   {...register("password", {
                     required: "La contraseña es requerida",
                     minLength: {
@@ -162,7 +169,10 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center transition-colors"
+                  style={{ color: '#b0b2b8' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#e5e7eb'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#b0b2b8'}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
