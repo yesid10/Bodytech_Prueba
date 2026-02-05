@@ -1,49 +1,49 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
+import axios from 'axios';
 import toast from 'react-hot-toast';
-import { CheckSquare, Loader2 } from 'lucide-react';
+import { CheckSquare, Loader2, Eye, EyeOff, AlertCircle } from 'lucide-react';
+
+interface LoginFormInputs {
+    email: string;
+    password: string;
+}
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting }
+    } = useForm<LoginFormInputs>({
+        mode: 'onBlur',
+        reValidateMode: 'onChange'
+    });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
+    const onSubmit = async (formData: LoginFormInputs) => {
         try {
-            const response = await api.post('/login', { email, password });
-            // The API returns access_token in the root of the response, not inside a 'user' object immediately sometimes
-            // Based on previous conversation: 
-            // 'access_token' => $token, 'token_type' => 'bearer'
+            const response = await api.post('/login', formData);
             
-            const token = response.data.access_token;
-            
-            // We need to fetch the user if not provided in login response
-            // OR if the API returns the user as well.
-            // Let's assume we need to fetch 'me' or if Laravel returns it.
-            // The AuthController::login returns respondWithToken which is just the token.
-            // So we need to set the token, then optionally fetch the user, OR let the AuthContext handle it.
-            // But AuthContext login expects a user.
-            
-            // Let's manually fetch 'me' here to get the user object.
             const { getCurrentUser } = await import('../services/authUtils');
-            const userResponse = await getCurrentUser(token);
+            const userResponse = await getCurrentUser(response.data.access_token);
 
             const userData = userResponse.user || userResponse;
-            login(token, userData);
+            login(response.data.access_token, userData);
             toast.success('Successfully logged in!');
             navigate('/');
-        } catch (error: unknown) {
-            console.error(error);
-            const errorMessage = (error as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Failed to login';
+        } catch (error) {
+            let errorMessage = 'Failed to login';
+            if (axios.isAxiosError(error)) {
+                errorMessage = error.response?.data?.message || error.message;
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
             toast.error(errorMessage);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -66,7 +66,8 @@ const Login = () => {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                    <form className="space-y-6" onSubmit={handleSubmit}>
+                    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+                        {/* Email Field */}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                                 Email address
@@ -74,42 +75,76 @@ const Login = () => {
                             <div className="mt-1">
                                 <input
                                     id="email"
-                                    name="email"
                                     type="email"
                                     autoComplete="email"
-                                    required
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="john@example.com"
+                                    disabled={isSubmitting}
+                                    className={`appearance-none block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
+                                        errors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                                    }`}
+                                    {...register('email', {
+                                        required: 'Email is required',
+                                        pattern: {
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                            message: 'Please enter a valid email address'
+                                        }
+                                    })}
                                 />
                             </div>
+                            {errors.email && (
+                                <div className="mt-1 flex items-center gap-2 text-red-600">
+                                    <AlertCircle className="w-4 h-4" />
+                                    <span className="text-sm">{errors.email.message}</span>
+                                </div>
+                            )}
                         </div>
 
+                        {/* Password Field */}
                         <div>
                             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                                 Password
                             </label>
-                            <div className="mt-1">
+                            <div className="mt-1 relative">
                                 <input
                                     id="password"
-                                    name="password"
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     autoComplete="current-password"
-                                    required
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••"
+                                    disabled={isSubmitting}
+                                    className={`appearance-none block w-full px-3 py-2 pr-10 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
+                                        errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                                    }`}
+                                    {...register('password', {
+                                        required: 'Password is required',
+                                        minLength: {
+                                            value: 6,
+                                            message: 'Password must be at least 6 characters'
+                                        }
+                                    })}
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                >
+                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                </button>
                             </div>
+                            {errors.password && (
+                                <div className="mt-1 flex items-center gap-2 text-red-600">
+                                    <AlertCircle className="w-4 h-4" />
+                                    <span className="text-sm">{errors.password.message}</span>
+                                </div>
+                            )}
                         </div>
 
                         <div>
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={isSubmitting}
                                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
-                                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                                {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                                 Sign in
                             </button>
                         </div>
