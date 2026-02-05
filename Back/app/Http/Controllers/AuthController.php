@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     /**
-     * Create a new AuthController instance.
+     * Crear una nueva instancia de AuthController.
      *
      * @return void
      */
@@ -22,7 +22,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Register a new user.
+     * Registrar un nuevo usuario.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
@@ -55,7 +55,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Get a JWT via given credentials.
+     * Obtener un JWT con las credenciales dadas.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
@@ -72,10 +72,10 @@ class AuthController extends Controller
     }
 
     /**
-     * Login or register user with Google OAuth token.
+     * Iniciar sesión o registrar usuario con token de Google OAuth.
      * 
      * Este método maneja el flujo de autenticación con Google:
-     * 1. Valida que el token de Google sea enviado
+     * 1. Valida que se envíe el token de Google
      * 2. Decodifica el token para extraer datos del usuario
      * 3. Busca si el usuario ya existe (por google_id o email)
      * 4. Si existe: actualiza datos y genera JWT
@@ -93,7 +93,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'error' => 'Google token is required',
+                'error' => 'Se requiere el token de Google',
                 'details' => $validator->errors()
             ], 400);
         }
@@ -105,7 +105,7 @@ class AuthController extends Controller
 
             if (!$googleData) {
                 return response()->json([
-                    'error' => 'Invalid Google token'
+                    'error' => 'Token de Google inválido'
                 ], 401);
             }
 
@@ -130,23 +130,23 @@ class AuthController extends Controller
                     'google_id' => $googleData['sub'],
                     'google_avatar_url' => $googleData['picture'] ?? null,
                     'auth_provider' => 'google',
-                    'password' => Hash::make(Str::random(64)), // Password aleatorio (no se usa para Google)
+                    'password' => Hash::make(Str::random(64)), // Contraseña aleatoria (no se usa para Google)
                     'email_verified_at' => now(), // Email ya verificado por Google
                 ]);
             }
 
-            // 5. Generar JWT token
+            // 5. Generar token JWT
             $token = JWTAuth::fromUser($user);
 
             return response()->json([
-                'message' => 'Successfully logged in with Google',
+                'message' => 'Ha iniciado sesión correctamente con Google',
                 'user' => $user,
                 'token' => $token,
             ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Authentication failed',
+                'error' => 'Fallo en la autenticación',
                 'message' => $e->getMessage()
             ], 500);
         }

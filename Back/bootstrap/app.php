@@ -6,18 +6,17 @@ use Illuminate\Foundation\Configuration\Middleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Disable CSRF protection for API routes
+        // Deshabilitar protección CSRF para rutas API
         $middleware->validateCsrfTokens(except: [
             'api/*',
         ]);
         
-        // Add CORS headers for API routes
+        // Configurar CORS para rutas API
         $middleware->api(prepend: [
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);

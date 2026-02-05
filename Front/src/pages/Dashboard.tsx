@@ -60,7 +60,7 @@ const Dashboard = () => {
       setTasks(response.data);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to fetch tasks");
+      toast.error('No se pudieron cargar las tareas');
     } finally {
       setLoading(false);
     }
@@ -76,22 +76,22 @@ const Dashboard = () => {
       setTasks([response.data, ...tasks]);
       setIsCreating(false);
       reset();
-      toast.success("Task created successfully");
+      toast.success('Tarea creada exitosamente');
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create task");
+      toast.error('No se pudo crear la tarea');
     }
   };
 
   const handleDeleteTask = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this task?")) return;
+    if (!confirm('¿Estás seguro de que quieres eliminar esta tarea?')) return;
     try {
       await api.delete(`/tasks/${id}`);
       setTasks(tasks.filter((t) => t.id !== id));
-      toast.success("Task deleted");
+      toast.success('Tarea eliminada');
     } catch (error) {
       console.error(error);
-      toast.error("Failed to delete task");
+      toast.error('No se pudo eliminar la tarea');
     }
   };
 
@@ -108,10 +108,10 @@ const Dashboard = () => {
         status: nextStatus,
       });
       setTasks(tasks.map((t) => (t.id === task.id ? response.data : t)));
-      toast.success(`Task marked as ${nextStatus.replace("_", " ")}`);
+      toast.success(`Tarea marcada como ${nextStatus.replace('_', ' ')}`);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update task status");
+      toast.error('No se pudo actualizar el estado de la tarea');
     }
   };
 
@@ -120,10 +120,10 @@ const Dashboard = () => {
       const response = await api.put(`/tasks/${taskId}`, updates);
       setTasks(tasks.map((t) => (t.id === taskId ? response.data : t)));
       setEditingTask(null);
-      toast.success("Task updated successfully");
+      toast.success('Tarea actualizada exitosamente');
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update task");
+      toast.error('No se pudo actualizar la tarea');
     }
   };
 
@@ -145,7 +145,7 @@ const Dashboard = () => {
 
   const saveEditing = async (taskId: number) => {
     if (!editTitle.trim()) {
-      toast.error("Title cannot be empty");
+      toast.error('El título no puede estar vacío');
       return;
     }
 
