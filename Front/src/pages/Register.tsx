@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useAppDispatch } from "../hooks/useRedux";
 import { login } from "../store/slices/authSlice";
@@ -7,17 +7,12 @@ import { loginWithGoogleOAuth } from "../services/googleAuth";
 import api from "../services/api";
 import axios from "axios";
 import toast from "react-hot-toast";
-import {
-  CheckSquare,
-  Loader2,
-  Eye,
-  EyeOff,
-  User,
-  Mail,
-  Lock,
-  AlertCircle,
-} from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 import GoogleAuthButton from "../components/GoogleAuthButton";
+import AuthHeader from "../components/AuthHeader";
+import Divider from "../components/Divider";
+import SubmitButton from "../components/SubmitButton";
+import InputFieldWithIcon from "../components/InputFieldWithIcon";
 
 interface RegisterFormInputs {
   name: string;
@@ -93,23 +88,12 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <CheckSquare className="w-12 h-12 text-indigo-600" />
-        </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Crea tu cuenta
-        </h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
-          O{" "}
-          <Link
-            to="/login"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            inicia sesión en tu cuenta existente
-          </Link>
-        </p>
-      </div>
+      <AuthHeader
+        title="Crea tu cuenta"
+        subtitle="O inicia sesión en tu cuenta existente"
+        linkText="inicia sesión en tu cuenta existente"
+        linkTo="/login"
+      />
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
@@ -118,231 +102,128 @@ const Register = () => {
             onSubmit={handleSubmit(onSubmit)}
             noValidate
           >
-            {/* Name Field */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Nombre completo
-              </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="name"
-                  placeholder="Jhon Doe"
-                  type="text"
-                  autoComplete="name"
-                  disabled={isSubmitting}
-                  className={`appearance-none block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
-                    errors.name ? "border-red-500 bg-red-50" : "border-gray-300"
-                  }`}
-                  {...register("name", {
-                    required: "El nombre es requerido",
-                    minLength: {
-                      value: 2,
-                      message: "El nombre debe tener al menos 2 caracteres",
-                    },
-                    maxLength: {
-                      value: 50,
-                      message: "El nombre no debe exceder 50 caracteres",
-                    },
-                    pattern: {
-                      value: /^[a-zA-Z\s]+$/,
-                      message:
-                        "El nombre solo puede contener letras y espacios",
-                    },
-                  })}
-                />
-              </div>
-              {errors.name && (
-                <div className="mt-1 flex items-center gap-2 text-red-600">
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">{errors.name.message}</span>
-                </div>
-              )}
-            </div>
+            <InputFieldWithIcon
+              id="name"
+              label="Nombre completo"
+              placeholder="Juan Pérez"
+              type="text"
+              icon={<User className="h-5 w-5 text-gray-400" />}
+              error={errors.name}
+              disabled={isSubmitting}
+              registration={register("name", {
+                required: "El nombre es requerido",
+                minLength: {
+                  value: 2,
+                  message: "El nombre debe tener al menos 2 caracteres",
+                },
+                maxLength: {
+                  value: 50,
+                  message: "El nombre no debe exceder 50 caracteres",
+                },
+                pattern: {
+                  value: /^[a-zA-Z\s]+$/,
+                  message:
+                    "El nombre solo puede contener letras y espacios",
+                },
+              })}
+              autoComplete="name"
+            />
 
-            {/* Email Field */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Correo electrónico
-              </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  placeholder="correo@ejemplo.com"
-                  type="email"
-                  autoComplete="email"
-                  disabled={isSubmitting}
-                  className={`appearance-none block w-full pl-10 pr-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
-                    errors.email
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                  {...register("email", {
-                    required: "El correo electrónico es requerido",
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "Por favor ingresa un correo electrónico válido",
-                    },
-                  })}
-                />
-              </div>
-              {errors.email && (
-                <div className="mt-1 flex items-center gap-2 text-red-600">
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">{errors.email.message}</span>
-                </div>
-              )}
-            </div>
+            <InputFieldWithIcon
+              id="email"
+              label="Correo electrónico"
+              placeholder="correo@ejemplo.com"
+              type="email"
+              icon={<Mail className="h-5 w-5 text-gray-400" />}
+              error={errors.email}
+              disabled={isSubmitting}
+              registration={register("email", {
+                required: "El correo electrónico es requerido",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Por favor ingresa un correo electrónico válido",
+                },
+              })}
+              autoComplete="email"
+            />
 
-            {/* Password Field */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Contraseña
-              </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password"
-                  placeholder="••••••"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  disabled={isSubmitting}
-                  className={`appearance-none block w-full pl-10 pr-10 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
-                    errors.password
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                  {...register("password", {
-                    required: "La contraseña es requerida",
-                    minLength: {
-                      value: 8,
-                      message: "La contraseña debe tener al menos 8 caracteres",
-                    },
-                    maxLength: {
-                      value: 100,
-                      message: "La contraseña no debe exceder 100 caracteres",
-                    },
-                    pattern: {
-                      value: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-                      message:
-                        "La contraseña debe contener al menos una mayúscula, una minúscula y un número",
-                    },
-                  })}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <div className="mt-1 flex items-center gap-2 text-red-600">
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">{errors.password.message}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Password Confirmation Field */}
-            <div>
-              <label
-                htmlFor="password_confirmation"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Confirmar contraseña
-              </label>
-              <div className="mt-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="password_confirmation"
-                  placeholder="••••••"
-                  type={showPasswordConfirmation ? "text" : "password"}
-                  autoComplete="new-password"
-                  disabled={isSubmitting}
-                  className={`appearance-none block w-full pl-10 pr-10 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors ${
-                    errors.password_confirmation
-                      ? "border-red-500 bg-red-50"
-                      : "border-gray-300"
-                  }`}
-                  {...register("password_confirmation", {
-                    required: "La confirmación de contraseña es requerida",
-                    validate: (value) =>
-                      value === watchPassword ||
-                      "Las contraseñas deben coincidir",
-                  })}
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowPasswordConfirmation(!showPasswordConfirmation)
-                  }
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                >
-                  {showPasswordConfirmation ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-              {errors.password_confirmation && (
-                <div className="mt-1 flex items-center gap-2 text-red-600">
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm">
-                    {errors.password_confirmation.message}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div>
+            <InputFieldWithIcon
+              id="password"
+              label="Contraseña"
+              placeholder="••••••"
+              type={showPassword ? "text" : "password"}
+              icon={<Lock className="h-5 w-5 text-gray-400" />}
+              error={errors.password}
+              disabled={isSubmitting}
+              registration={register("password", {
+                required: "La contraseña es requerida",
+                minLength: {
+                  value: 8,
+                  message: "La contraseña debe tener al menos 8 caracteres",
+                },
+                maxLength: {
+                  value: 100,
+                  message: "La contraseña no debe exceder 100 caracteres",
+                },
+                pattern: {
+                  value: /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                  message:
+                    "La contraseña debe contener al menos una mayúscula, una minúscula y un número",
+                },
+              })}
+              autoComplete="new-password"
+            />
+            <div className="relative -mt-7 pt-1 flex justify-end pr-3">
               <button
-                type="submit"
-                disabled={isSubmitting || googleLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
               >
-                {isSubmitting && (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
                 )}
-                Registrarse
               </button>
             </div>
 
-            {/* Separador O */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">
-                  O continúa con
-                </span>
-              </div>
+            <InputFieldWithIcon
+              id="password_confirmation"
+              label="Confirmar contraseña"
+              placeholder="••••••"
+              type={showPasswordConfirmation ? "text" : "password"}
+              icon={<Lock className="h-5 w-5 text-gray-400" />}
+              error={errors.password_confirmation}
+              disabled={isSubmitting}
+              registration={register("password_confirmation", {
+                required: "La confirmación de contraseña es requerida",
+                validate: (value) =>
+                  value === watchPassword ||
+                  "Las contraseñas deben coincidir",
+              })}
+              autoComplete="new-password"
+            />
+            <div className="relative -mt-7 pt-1 flex justify-end pr-3">
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPasswordConfirmation(!showPasswordConfirmation)
+                }
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {showPasswordConfirmation ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
             </div>
+
+            <SubmitButton disabled={googleLoading} loading={isSubmitting}>
+              Registrarse
+            </SubmitButton>
+
+            <Divider />
 
             {/* Botón Google */}
             <GoogleAuthButton
