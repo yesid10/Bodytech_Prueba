@@ -19,6 +19,7 @@ use App\Http\Controllers\TaskController;
 // Public routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::post('login-google', [AuthController::class, 'loginWithGoogle'])->name('login.google');
 
 // Protected routes
 Route::middleware('auth:api')->group(function () {

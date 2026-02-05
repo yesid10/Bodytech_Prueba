@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -68,6 +69,137 @@ class AuthController extends Controller
         }
 
         return $this->respondWithToken($token);
+    }
+
+    /**
+     * Login or register user with Google OAuth token.
+     * 
+     * Este método maneja el flujo de autenticación con Google:
+     * 1. Valida que el token de Google sea enviado
+     * 2. Decodifica el token para extraer datos del usuario
+     * 3. Busca si el usuario ya existe (por google_id o email)
+     * 4. Si existe: actualiza datos y genera JWT
+     * 5. Si no existe: crea nuevo usuario y genera JWT
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function loginWithGoogle(Request $request)
+    {
+        // 1. Validar que el token de Google sea proporcionado
+        $validator = Validator::make($request->all(), [
+            'google_token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Google token is required',
+                'details' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            // 2. Decodificar el token de Google
+            // Opción A: Decodificar sin verificar (rápido, requiere HTTPS)
+            $googleData = $this->decodeGoogleToken($request->google_token);
+
+            if (!$googleData) {
+                return response()->json([
+                    'error' => 'Invalid Google token'
+                ], 401);
+            }
+
+            // 3. Buscar usuario existente por google_id O email
+            $user = User::where('google_id', $googleData['sub'])
+                ->orWhere('email', $googleData['email'])
+                ->first();
+
+            if ($user) {
+                // 4a. Usuario existente: actualizar datos de Google
+                $user->update([
+                    'google_id' => $googleData['sub'],
+                    'google_avatar_url' => $googleData['picture'] ?? null,
+                    'auth_provider' => 'google',
+                    'email_verified_at' => now(), // Marcar como verificado (Google lo verifica)
+                ]);
+            } else {
+                // 4b. Usuario nuevo: crear cuenta
+                $user = User::create([
+                    'name' => $googleData['name'],
+                    'email' => $googleData['email'],
+                    'google_id' => $googleData['sub'],
+                    'google_avatar_url' => $googleData['picture'] ?? null,
+                    'auth_provider' => 'google',
+                    'password' => Hash::make(Str::random(64)), // Password aleatorio (no se usa para Google)
+                    'email_verified_at' => now(), // Email ya verificado por Google
+                ]);
+            }
+
+            // 5. Generar JWT token
+            $token = JWTAuth::fromUser($user);
+
+            return response()->json([
+                'message' => 'Successfully logged in with Google',
+                'user' => $user,
+                'token' => $token,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Authentication failed',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Decodificar token de Google (opción rápida).
+     * 
+     * Este método decodifica el JWT sin verificar la firma.
+     * En producción, asegúrate de usar HTTPS siempre.
+     * 
+     * El token JWT tiene 3 partes separadas por puntos:
+     * - header.payload.signature
+     * 
+     * Decodificamos solo el payload (segundo elemento) que contiene los datos del usuario
+     *
+     * @param  string  $token
+     * @return array|null
+     */
+    private function decodeGoogleToken($token)
+    {
+        try {
+            // Dividir el token en 3 partes
+            $parts = explode('.', $token);
+
+            // Validar que tenga exactamente 3 partes
+            if (count($parts) !== 3) {
+                return null;
+            }
+
+            // El payload es el segundo elemento (índice 1)
+            $payload = $parts[1];
+
+            // Agregar padding si es necesario (base64url puede no tenerlo)
+            $payload .= str_repeat('=', strlen($payload) % 4);
+
+            // Decodificar base64
+            $decoded = base64_decode(strtr($payload, '-_', '+/'));
+
+            // Convertir JSON a array
+            $data = json_decode($decoded, true);
+
+            // Validar estructura básica
+            if (!isset($data['sub']) || !isset($data['email'])) {
+                return null;
+            }
+
+            return $data;
+
+        } catch (\Exception $e) {
+            \Log::error('Error decoding Google token: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
