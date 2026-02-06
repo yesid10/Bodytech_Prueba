@@ -2,7 +2,7 @@
 
 ## 📌 Descripción del Proyecto
 
-**Mini Gestor de Tareas** es una aplicación web fullstack para gestionar tareas de manera eficiente. Permite crear, editar, eliminar y organizar tareas por estado (pendiente, en progreso, completada), con autenticación segura mediante JWT y login con Google.
+**Mini Gestor de Tareas** es una aplicación web fullstack para gestionar tareas de manera eficiente. Permite crear, editar, eliminar y organizar tareas por estado, con autenticación por JWT y Google OAuth.
 
 ---
 
@@ -10,11 +10,10 @@
 
 Antes de empezar, asegúrate de tener instalado:
 
-- **Docker** y **Docker Compose** (para el backend)
-- **Node.js 18+** y **npm** (para el frontend)
+- **Docker** y **Docker Compose**
 - **Git** (para clonar el repositorio)
 
-⚡ **Nota**: No necesitas instalar PHP ni PostgreSQL localmente. Docker se encarga de todo.
+⚡ **Nota**: No necesitas instalar PHP, Node.js ni PostgreSQL localmente. Docker lo maneja todo.
 
 ---
 
@@ -24,8 +23,8 @@ Antes de empezar, asegúrate de tener instalado:
 - **Framework**: Laravel 12.x
 - **Lenguaje**: PHP 8.2+
 - **Autenticación**: JWT (JWT-Auth 2.2)
-- **Base de Datos**: PostgreSQL 15 (Docker)
-- **Servidor**: Nginx (en Docker)
+- **Base de Datos**: PostgreSQL 15
+- **Servidor**: Nginx
 
 ### Frontend
 - **Framework**: React 19.2.0
@@ -33,115 +32,107 @@ Antes de empezar, asegúrate de tener instalado:
 - **Build Tool**: Vite 6.x
 - **Gestión de Estado**: Redux Toolkit
 - **Estilos**: Tailwind CSS
-- **Routing**: React Router 7.13
-- **HTTP Client**: Axios
-- **Validaciones**: React Hook Form
+- **Routing**: React Router
+- **Validaciones**: React Hook Form + Yup
 - **Autenticación Social**: Firebase + Google OAuth
 
 ---
 
-## 🚀 Cómo Levantar el Proyecto
+## 🚀 Instalación Rápida (Docker)
 
-### 1️⃣ Backend (Docker)
+### 1. Levantar TODO con un comando
 
 ```bash
-# Navega a la carpeta del backend
-cd Back
-
-# Levanta el contenedor Docker
+cd Prueba_BodyTech
 docker compose up -d
-
-# El backend estará disponible en: http://localhost:8000/api
 ```
 
-**Lo que Docker levanta:**
-- Backend con Laravel y Nginx en puerto 8000
-- PostgreSQL 15 en puerto 5432 (base de datos)
-- Credenciales BD: usuario `taskuser`, contraseña `taskpassword123`
+Lo que se inicia automáticamente:
+- ✅ Backend (Laravel + Nginx) → puerto 8000
+- ✅ Frontend (React + Vite) → puerto 5173
+- ✅ Database (PostgreSQL 15) → puerto 5432
+- ✅ Migraciones automáticas
+- ✅ Variables de entorno configuradas
 
----
+### 2. Acceso a la aplicación
 
-### 2️⃣ Frontend (Manual)
+```
+🌐 Frontend:  http://localhost:5173
+📡 API:       http://localhost:8000/api
+🗄️  Database: localhost:5432 (taskuser / taskpassword123)
+```
+
+### 3. Detener los servicios
 
 ```bash
-# Navega a la carpeta del frontend (otra terminal)
-cd Front
-
-# Instala las dependencias
-npm install
-
-# Levanta el servidor de desarrollo
-npm run dev
-
-# El frontend estará disponible en: http://localhost:5173
-```
-
----
-
-## 📝 Variables de Entorno
-
-### Backend (.env)
-
-```
-APP_NAME="Mini Gestor de Tareas"
-APP_ENV=local
-APP_DEBUG=true
-APP_KEY=base64:tu_clave_aqui
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=pgsql
-DB_HOST=db
-DB_PORT=5432
-DB_DATABASE=tasksdb
-DB_USERNAME=taskuser
-DB_PASSWORD=taskpassword123
-
-JWT_SECRET=tu_jwt_secret_aqui
-```
-
----
-
-## 🎯 Acceso a la Aplicación
-
-Una vez que levantes ambos servicios:
-
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:8000/api
-- **Base de Datos** (PostgreSQL): localhost:5432
-
----
-
-## 🛑 Detener la Aplicación
-
-### Backend (Docker)
-```bash
-cd Back
 docker compose down
 ```
 
-### Frontend
-Presiona `Ctrl + C` en la terminal donde está running `npm run dev`
+---
+
+## 📋 Funcionalidades
+
+✅ Registro e inicio de sesión (email + contraseña)  
+✅ Autenticación con Google OAuth  
+✅ JWT tokens con refresh automático  
+✅ Crear tareas  
+✅ Editar tareas (título y descripción)  
+✅ Cambiar estado de tareas (Pendiente → En Progreso → Completada)  
+✅ Eliminar tareas con confirmación  
+✅ Filtrar tareas por estado  
+✅ Perfil de usuario  
+✅ Subida de imagen de perfil  
+✅ Validaciones frontend y backend  
+✅ Notificaciones toast  
+✅ Interfaz responsiva y moderna  
 
 ---
 
-## 📦 Dependencias Requeridas
+## ✅ Verificar que funciona
 
-### Para levantar el proyecto necesitas:
-- **Docker** y **Docker Compose** (para el backend)
-- **Node.js 18+** y **npm** (para el frontend)
-- **Git** (para clonar el repositorio)
-
-No necesitas instalar PHP ni PostgreSQL localmente. Todo lo maneja Docker.
+1. Abre http://localhost:5173
+2. Registrate o inicia sesión con Google
+3. Crea tu primera tarea
+4. ¡Listo! 🎉
 
 ---
 
-## ✅ Verificación de que Todo Funciona
+## 🐛 Troubleshooting
 
-1. Abre **http://localhost:5173** en tu navegador
-2. Deberías ver la aplicación del gestor de tareas
-3. Intenta registrarte o hacer login con Google
-4. Crea una tarea
-5. ¡Listo! ✨
+### Los servicios no inician
+```bash
+docker compose logs -f
+docker compose down -v
+docker compose up -d
+```
+
+### Frontend no conecta con backend
+- Verifica que el backend esté corriendo: `docker compose logs backend`
+- El puerto 8000 debe estar disponible
+
+### Ejecutar migraciones manualmente
+```bash
+docker compose exec backend php artisan migrate
+```
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+Prueba_BodyTech/
+├── Back/               # Backend (Laravel)
+│   ├── app/
+│   ├── database/
+│   ├── config/
+│   ├── routes/
+│   └── Dockerfile
+├── Front/              # Frontend (React)
+│   ├── src/
+│   ├── public/
+│   └── Dockerfile
+└── docker-compose.yml  # Orquestación de servicios
+```
 
 ---
 
