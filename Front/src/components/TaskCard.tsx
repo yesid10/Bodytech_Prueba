@@ -5,10 +5,12 @@ interface TaskCardProps {
   task: Task;
   isEditing: boolean;
   editTitle: string;
+  editDescription: string;
   onStatusClick: (task: Task) => void;
   onEditClick: (task: Task) => void;
   onDeleteClick: (id: number) => void;
   onEditTitleChange: (title: string) => void;
+  onEditDescriptionChange: (description: string) => void;
   onSaveEdit: (taskId: number) => void;
   onCancelEdit: () => void;
 }
@@ -17,10 +19,12 @@ const TaskCard = ({
   task,
   isEditing,
   editTitle,
+  editDescription,
   onStatusClick,
   onEditClick,
   onDeleteClick,
   onEditTitleChange,
+  onEditDescriptionChange,
   onSaveEdit,
   onCancelEdit,
 }: TaskCardProps) => {
@@ -68,6 +72,20 @@ const TaskCard = ({
               outlineColor: '#6b9ac3'
             }}
             placeholder="Título de la tarea"
+          />
+          <textarea
+            value={editDescription}
+            onChange={(e) => onEditDescriptionChange(e.target.value)}
+            className="w-full rounded-md px-3 py-2 placeholder-[#b0b2b8] focus:outline-none focus:ring-2 transition-all resize-none"
+            style={{
+              backgroundColor: '#252b38',
+              borderColor: '#6b9ac3',
+              color: '#e5e7eb',
+              borderWidth: '1px',
+              outlineColor: '#6b9ac3'
+            }}
+            placeholder="Descripción (opcional)"
+            rows={3}
           />
           <div className="flex justify-end gap-2">
             <button

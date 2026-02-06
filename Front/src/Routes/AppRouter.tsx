@@ -1,8 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { useAppDispatch, useAppSelector } from '../hooks/useRedux';
-import { loadUserAsync } from '../store/slices/authSlice';
+import { useAppSelector } from '../hooks/useRedux';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
@@ -37,11 +35,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppRouter = () => {
-    const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        dispatch(loadUserAsync());
-    }, [dispatch]);
+    // Ya no necesitamos validar el token al cargar - simplemente confiamos en localStorage
     return (
         <BrowserRouter>
             <div className="min-h-screen bg-gray-100">

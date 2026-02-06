@@ -7,10 +7,12 @@ interface TaskListProps {
   loading: boolean;
   editingTaskId: number | null;
   editTitle: string;
+  editDescription: string;
   onStatusClick: (task: Task) => void;
   onEditClick: (task: Task) => void;
   onDeleteClick: (id: number) => void;
   onEditTitleChange: (title: string) => void;
+  onEditDescriptionChange: (description: string) => void;
   onSaveEdit: (taskId: number) => void;
   onCancelEdit: () => void;
 }
@@ -20,10 +22,12 @@ const TaskList = ({
   loading,
   editingTaskId,
   editTitle,
+  editDescription,
   onStatusClick,
   onEditClick,
   onDeleteClick,
   onEditTitleChange,
+  onEditDescriptionChange,
   onSaveEdit,
   onCancelEdit,
 }: TaskListProps) => {
@@ -67,10 +71,12 @@ const TaskList = ({
           task={task}
           isEditing={editingTaskId === task.id}
           editTitle={editTitle}
+          editDescription={editDescription}
           onStatusClick={onStatusClick}
           onEditClick={onEditClick}
           onDeleteClick={onDeleteClick}
           onEditTitleChange={onEditTitleChange}
+          onEditDescriptionChange={onEditDescriptionChange}
           onSaveEdit={onSaveEdit}
           onCancelEdit={onCancelEdit}
         />

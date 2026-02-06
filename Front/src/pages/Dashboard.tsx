@@ -7,6 +7,7 @@ import TaskList from "../components/TaskList";
 import TaskForm from "../components/TaskForm";
 import TaskStats from "../components/TaskStats";
 import TaskFilter from "../components/TaskFilter";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 interface CreateTaskFormInputs {
   title: string;
@@ -23,6 +24,12 @@ const Dashboard = () => {
     "all" | "pending" | "in_progress" | "done"
   >("all");
   const [editTitle, setEditTitle] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; taskId: number | null }>({
+    isOpen: false,
+    taskId: null,
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -65,18 +72,29 @@ const Dashboard = () => {
   };
 
   const handleDeleteTask = async (id: number) => {
-    if (
-      !confirm("¿Estás seguro de que quieres eliminar esta tarea?")
-    )
-      return;
+    // Abrir modal de confirmación
+    setDeleteConfirm({ isOpen: true, taskId: id });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirm.taskId) return;
+    
+    setIsDeleting(true);
     try {
-      await api.delete(`/tasks/${id}`);
-      setTasks(tasks.filter((t) => t.id !== id));
-      toast.success("Tarea eliminada");
+      await api.delete(`/tasks/${deleteConfirm.taskId}`);
+      setTasks(tasks.filter((t) => t.id !== deleteConfirm.taskId));
+      toast.success("Tarea eliminada exitosamente");
+      setDeleteConfirm({ isOpen: false, taskId: null });
     } catch (error) {
       console.error(error);
       toast.error("No se pudo eliminar la tarea");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirm({ isOpen: false, taskId: null });
   };
 
   const handleUpdateStatus = async (task: Task) => {
@@ -119,6 +137,7 @@ const Dashboard = () => {
   const startEditing = (task: Task) => {
     setEditingTask(task);
     setEditTitle(task.title);
+    setEditDescription(task.description || "");
   };
 
   const saveEditing = async (taskId: number) => {
@@ -126,7 +145,10 @@ const Dashboard = () => {
       toast.error("El título no puede estar vacío");
       return;
     }
-    await handleUpdateTask(taskId, { title: editTitle.trim() });
+    await handleUpdateTask(taskId, { 
+      title: editTitle.trim(),
+      description: editDescription.trim()
+    });
   };
 
   return (
@@ -185,10 +207,12 @@ const Dashboard = () => {
             loading={loading}
             editingTaskId={editingTask?.id || null}
             editTitle={editTitle}
+            editDescription={editDescription}
             onStatusClick={handleUpdateStatus}
             onEditClick={startEditing}
             onDeleteClick={handleDeleteTask}
             onEditTitleChange={setEditTitle}
+            onEditDescriptionChange={setEditDescription}
             onSaveEdit={saveEditing}
             onCancelEdit={() => setEditingTask(null)}
           />
@@ -201,6 +225,19 @@ const Dashboard = () => {
         isSubmitting={false}
         onSubmit={handleCreateTask}
         onClose={() => setIsFormOpen(false)}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        title="Eliminar tarea"
+        message="¿Estás seguro de que quieres eliminar esta tarea? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        isDangerous={true}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isLoading={isDeleting}
       />
     </div>
   );

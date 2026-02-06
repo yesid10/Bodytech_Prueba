@@ -29,7 +29,7 @@ const TaskFilter = ({ selectedFilter, taskCount, onFilterChange }: TaskFilterPro
           <button
             key={filter.value}
             onClick={() => onFilterChange(filter.value)}
-            className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border flex items-center justify-center gap-2"
+            className="px-3 cursor-pointer py-2 rounded-lg text-sm font-medium transition-all duration-200 border flex items-center justify-center gap-2"
             style={{
               backgroundColor: selectedFilter === filter.value ? '#6b9ac3' : '#252b38',
               color: selectedFilter === filter.value ? '#0f1419' : '#b0b2b8',

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import type { User } from '../../types';
 import { getCurrentUser } from '../../services/authUtils';
+import axios from 'axios';
 
 interface AuthState {
     user: User | null;
@@ -11,10 +12,10 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-    user: null,
+    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null,
     token: localStorage.getItem('token'),
     isAuthenticated: !!localStorage.getItem('token'),
-    loading: true,
+    loading: false,
     error: null,
 };
 
@@ -29,9 +30,16 @@ export const loadUserAsync = createAsyncThunk(
         try {
             const { user } = await getCurrentUser(token);
             return user;
-        } catch {
-            localStorage.removeItem('token');
-            return rejectWithValue('Failed to load user');
+        } catch (error: unknown) {
+            // Si es 401 (Unauthorized), eliminar el token y desloguear
+            if (axios.isAxiosError(error) && error.response?.status === 401) {
+                localStorage.removeItem('token');
+                return rejectWithValue('Token inválido o expirado');
+            }
+            // Para otros errores, no rechazar - solo mantener el token
+            // El usuario seguirá logueado aunque no cargamos sus datos
+            console.error('Error loading user:', error);
+            return null;
         }
     }
 );
@@ -46,6 +54,7 @@ const authSlice = createSlice({
             state.isAuthenticated = true;
             state.error = null;
             localStorage.setItem('token', action.payload.token);
+            localStorage.setItem('user', JSON.stringify(action.payload.user));
         },
         logout: (state) => {
             state.token = null;
@@ -53,6 +62,7 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.error = null;
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
         },
         clearError: (state) => {
             state.error = null;
@@ -66,18 +76,26 @@ const authSlice = createSlice({
             })
             .addCase(loadUserAsync.fulfilled, (state, action) => {
                 state.loading = false;
+                // Si tenemos usuario, actualizar datos
                 if (action.payload) {
                     state.user = action.payload;
                     state.isAuthenticated = true;
                 } else {
-                    state.isAuthenticated = false;
+                    // Si no hay usuario pero hay token, mantener logueado
+                    if (state.token) {
+                        state.isAuthenticated = true;
+                    } else {
+                        state.isAuthenticated = false;
+                    }
                 }
             })
-            .addCase(loadUserAsync.rejected, (state, action) => {
+            .addCase(loadUserAsync.rejected, (state) => {
                 state.loading = false;
+                // Solo desloguear si hay error (token inválido)
                 state.isAuthenticated = false;
                 state.token = null;
-                state.error = action.payload as string;
+                state.user = null;
+                state.error = 'Token inválido o expirado';
             });
     },
 });

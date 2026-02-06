@@ -28,7 +28,7 @@ const Layout = () => {
                             <span className="text-sm hidden sm:block" style={{ color: '#b0b2b8' }}>Bienvenido, <span className="font-semibold" style={{ color: '#e5e7eb' }}>{user?.name}</span></span>
                             <button
                                 onClick={handleLogout}
-                                className="inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2"
+                                className="inline-flex cursor-pointer items-center px-4 py-2 border text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2"
                                 style={{
                                     backgroundColor: '#252b38',
                                     borderColor: '#5a7a9a',
