@@ -2,6 +2,10 @@ export interface User {
     id: number;
     name: string;
     email: string;
+    google_id?: string;
+    google_avatar_url?: string;
+    profile_image_url?: string;
+    auth_provider?: 'local' | 'google';
     created_at: string;
     updated_at: string;
 }

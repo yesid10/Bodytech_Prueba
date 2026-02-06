@@ -4,6 +4,7 @@ import { useAppSelector } from '../hooks/useRedux';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
+import Profile from '../pages/Profile';
 import Layout from '../components/Layout';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -58,6 +59,7 @@ const AppRouter = () => {
                         </ProtectedRoute>
                     }>
                         <Route index element={<Dashboard />} />
+                        <Route path="profile" element={<Profile />} />
                     </Route>
 
                     {/* Catch all route - redirect to home or 404 */}

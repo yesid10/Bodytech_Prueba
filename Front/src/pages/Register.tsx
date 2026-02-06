@@ -175,23 +175,24 @@ const Register = () => {
                 },
               })}
               autoComplete="new-password"
+              toggleButton={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="transition-colors cursor-pointer"
+                  style={{ color: '#b0b2b8' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#e5e7eb'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#b0b2b8'}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              }
             />
-            <div className="relative -mt-7 pt-1 flex justify-end pr-3">
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="transition-colors"
-                style={{ color: '#b0b2b8' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#e5e7eb'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#b0b2b8'}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
 
             <InputFieldWithIcon
               id="password_confirmation"
@@ -208,25 +209,26 @@ const Register = () => {
                   "Las contraseñas deben coincidir",
               })}
               autoComplete="new-password"
+              toggleButton={
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPasswordConfirmation(!showPasswordConfirmation)
+                  }
+                  className="transition-colors cursor-pointer"
+                  style={{ color: '#b0b2b8' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#e5e7eb'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#b0b2b8'}
+                  tabIndex={-1}
+                >
+                  {showPasswordConfirmation ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              }
             />
-            <div className="relative -mt-7 pt-1 flex justify-end pr-3">
-              <button
-                type="button"
-                onClick={() =>
-                  setShowPasswordConfirmation(!showPasswordConfirmation)
-                }
-                className="transition-colors"
-                style={{ color: '#b0b2b8' }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#e5e7eb'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#b0b2b8'}
-              >
-                {showPasswordConfirmation ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
 
             <SubmitButton disabled={googleLoading} loading={isSubmitting}>
               Registrarse
