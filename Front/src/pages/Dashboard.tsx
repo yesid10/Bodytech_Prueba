@@ -173,7 +173,7 @@ const Dashboard = () => {
             </div>
             <button
               onClick={() => setIsFormOpen(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+              className="inline-flex cursor-pointer items-center gap-2 px-6 py-3 font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, #6b9ac3 0%, #7a8fa8 100%)',
                 color: '#0f1419'
