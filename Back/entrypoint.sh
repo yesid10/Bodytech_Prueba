@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Wait for database to be ready
 echo "Waiting for PostgreSQL..."
 while ! nc -z db 5432; do
@@ -18,9 +20,10 @@ echo "Running migrations..."
 php artisan migrate --force
 
 # Generate JWT secret
-echo "Generating JWT secret if needed..."
+echo "Generating JWT secret..."
 php artisan jwt:secret --force 2>/dev/null || true
 
-# Start PHP-FPM
 echo "Starting PHP-FPM..."
-php-fpm
+
+# Start PHP-FPM
+exec php-fpm
