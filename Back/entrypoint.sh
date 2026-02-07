@@ -2,6 +2,31 @@
 
 set -e
 
+# Ensure .env file exists
+if [ ! -f "/var/www/html/.env" ]; then
+  echo "Creating .env file..."
+  touch /var/www/html/.env
+  chmod 644 /var/www/html/.env
+  cat > /var/www/html/.env << 'ENVFILE'
+APP_NAME=TaskManager
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+APP_KEY=base64:0000000000000000000000000000000000000000000=
+LOG_CHANNEL=stack
+LOG_LEVEL=debug
+DB_CONNECTION=pgsql
+DB_HOST=db
+DB_PORT=5432
+DB_DATABASE=tasksdb
+DB_USERNAME=taskuser
+DB_PASSWORD=taskpassword123
+SESSION_DRIVER=file
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+ENVFILE
+fi
+
 # Install composer dependencies if vendor doesn't exist
 if [ ! -d "/var/www/html/vendor" ]; then
   echo "Installing Composer dependencies..."

@@ -23,6 +23,9 @@ WORKDIR /var/www/html
 # Copy entire application code
 COPY . .
 
+# Ensure .env exists (copy from .env if exists, otherwise create minimal)
+RUN if [ ! -f /var/www/html/.env ]; then cp -v /var/www/html/.env.example /var/www/html/.env 2>/dev/null || echo "APP_NAME=TaskManager\nAPP_ENV=local\nAPP_DEBUG=true\nAPP_KEY=\nDB_CONNECTION=pgsql\nDB_HOST=db\nDB_PORT=5432\nDB_DATABASE=tasksdb\nDB_USERNAME=taskuser\nDB_PASSWORD=taskpassword123" > /var/www/html/.env; fi
+
 # Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
