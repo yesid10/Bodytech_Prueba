@@ -9,6 +9,8 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./Back:/var/www/html
+      - /var/www/html/vendor
+      - /var/www/html/bootstrap/cache
       - ./Back/storage/app:/var/www/html/storage/app
       - ./Back/storage/framework:/var/www/html/storage/framework
       - ./Back/storage/logs:/var/www/html/storage/logs
