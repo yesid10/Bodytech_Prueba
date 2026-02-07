@@ -17,6 +17,27 @@ Antes de empezar, asegúrate de tener instalado:
 
 ---
 
+## ⚙️ Configuración de Variables de Entorno
+
+### ⚠️ IMPORTANTE: Nombres de archivos `.env`
+
+Cuando recibas los archivos `.env` por WhatsApp, Email o cualquier servicio de mensajería, **algunos servicios pueden eliminar el punto (.) al inicio del nombre del archivo**.
+
+🔴 **INCORRECTO**: `env` (sin el punto)  
+🟢 **CORRECTO**: `.env` (CON el punto)
+
+#### En Windows:
+```powershell
+# Renombrar si es necesario
+ren env .env
+```
+
+#### En Mac/Linux:
+```bash
+# Renombrar si es necesario
+mv env .env
+```
+
 ## ⚙️ Stack Tecnológico
 
 ### Backend
@@ -41,6 +62,11 @@ Antes de empezar, asegúrate de tener instalado:
 ## 🚀 Instalación Rápida (Docker)
 
 ### 1. Levantar TODO con un comando
+
+### ⚠️ IMPORTANTE: Tener los archivos `.env` dentro de cada directorio
+
+Por email se hará llegar los archivos de configuración .env para el Back y para el Front.
+Se deben agregar a cada directorio, **NO CONFUNDIR CADA ARCHIVO**.
 
 ```bash
 cd Prueba_BodyTech
@@ -67,6 +93,26 @@ Lo que se inicia automáticamente:
 ```bash
 docker compose down
 ```
+
+---
+
+### Archivos de configuración necesarios:
+
+1. **Backend** (`Back/.env`)
+   - Configuración de Base de Datos
+   - JWT Secret
+   - App Key
+
+2. **Frontend** (`Front/.env`)
+   - `VITE_FIREBASE_API_KEY` - De Firebase Console
+   - `VITE_FIREBASE_AUTH_DOMAIN` - De Firebase Console
+   - `VITE_FIREBASE_PROJECT_ID` - De Firebase Console
+   - `VITE_FIREBASE_STORAGE_BUCKET` - De Firebase Console
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID` - De Firebase Console
+   - `VITE_FIREBASE_APP_ID` - De Firebase Console
+   - `VITE_CLOUDINARY_CLOUD_NAME` - De Cloudinary
+   - `VITE_CLOUDINARY_UPLOAD_PRESET` - De Cloudinary
+
 
 ---
 
